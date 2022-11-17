@@ -18,7 +18,7 @@
     
         $(function(){
             $("#region").on('change',function(){
-                $('#province').empty();
+                $('#province').empty();$('#cities').empty();$('#barangays').empty();
                 var selectedRegion = $(this).children("option:selected").val();
                 var fill_provinces = "https://psgc.gitlab.io/api/regions/" + selectedRegion + "/provinces";
                 //console.log(fill_provinces);
@@ -34,7 +34,7 @@
                  });
                 });
             $("#province").on('change',function(){
-                $('#cities').empty();
+                $('#cities').empty();$('#barangays').empty();
                 var selectedProvince = $(this).children("option:selected").val();
                 var fill_cities = "https://psgc.gitlab.io/api/provinces/" + selectedProvince + '/cities-municipalities/';
                 //console.log(fill_cities);
