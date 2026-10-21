@@ -6,22 +6,333 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PH Locations API</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap">
+    <style>
+        :root {
+            --ph-blue: #0038a8;
+            --ph-red: #ce1126;
+            --ph-yellow: #fcd116;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: #f4f6fb;
+        }
+
+        .split {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 100vh;
+        }
+
+        /* ---------- Left half: Philippines design ---------- */
+        .ph-panel {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 48px 32px;
+            overflow: hidden;
+            color: #fff;
+            text-align: center;
+            background:
+                radial-gradient(circle at 20% 15%, rgba(252, 209, 22, 0.18), transparent 40%),
+                radial-gradient(circle at 85% 90%, rgba(206, 17, 38, 0.55), transparent 50%),
+                linear-gradient(160deg, var(--ph-blue) 0%, #00247a 100%);
+        }
+
+        /* Flag-coloured stripe along the bottom edge */
+        .ph-panel::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 8px;
+            background: linear-gradient(90deg, var(--ph-blue) 0 33%, var(--ph-yellow) 33% 66%, var(--ph-red) 66% 100%);
+        }
+
+        /* Large faded sun in the background */
+        .ph-panel__sun-bg {
+            position: absolute;
+            top: -120px;
+            right: -120px;
+            width: 420px;
+            opacity: 0.08;
+            animation: spin 60s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .ph-flag {
+            position: relative;
+            width: 100%;
+            max-width: 360px;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+        }
+
+        .ph-panel h2 {
+            position: relative;
+            margin: 36px 0 8px;
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .ph-panel h2 span {
+            color: var(--ph-yellow);
+        }
+
+        .ph-panel p {
+            position: relative;
+            max-width: 380px;
+            margin: 0 auto;
+            font-size: 1rem;
+            opacity: 0.85;
+        }
+
+        .ph-levels {
+            position: relative;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin: 28px 0 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .ph-levels li {
+            padding: 6px 14px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 999px;
+            font-size: 0.8rem;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* ---------- Right half: location card ---------- */
+        .form-panel {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 48px 32px;
+        }
+
+        .location-card {
+            width: 100%;
+            max-width: 460px;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 20px 50px rgba(0, 32, 100, 0.12);
+            overflow: hidden;
+        }
+
+        .location-card__header {
+            padding: 28px 32px 0;
+        }
+
+        .location-card__header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1b1f3b;
+        }
+
+        .location-card__header p {
+            margin: 4px 0 0;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .location-card__body {
+            padding: 24px 32px 32px;
+        }
+
+        .step-label {
+            display: flex;
+            align-items: center;
+            margin-bottom: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .step-label .step {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            margin-right: 8px;
+            border-radius: 50%;
+            font-size: 0.75rem;
+            color: #fff;
+            background: var(--ph-blue);
+        }
+
+        .form-control {
+            height: 46px;
+            border: 1px solid #dde1e7;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-control:focus {
+            border-color: var(--ph-blue);
+            box-shadow: 0 0 0 3px rgba(0, 56, 168, 0.15);
+        }
+
+        .form-control:disabled {
+            background-color: #f5f6f8;
+            cursor: not-allowed;
+        }
+
+        .location-card__footer {
+            padding: 14px 32px;
+            font-size: 0.75rem;
+            text-align: center;
+            color: #888;
+            background: #f8f9fb;
+        }
+
+        .location-card__footer a {
+            color: var(--ph-blue);
+        }
+
+        /* ---------- Phones / tablets: stack the halves ---------- */
+        @media (max-width: 768px) {
+            .split {
+                grid-template-columns: 1fr;
+            }
+
+            .ph-panel {
+                padding: 40px 16px 48px;
+            }
+
+            .ph-flag {
+                max-width: 240px;
+            }
+
+            .ph-panel h2 {
+                margin-top: 24px;
+                font-size: 2rem;
+            }
+
+            .form-panel {
+                padding: 32px 16px;
+            }
+
+            .location-card__header,
+            .location-card__body {
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .ph-panel__sun-bg {
+                animation: none;
+            }
+        }
+    </style>
 </head>
 <body>
- <div class="container-fluid">
-    <div class="container">
-        REGION
-        <select id="region" class="form-control" required></select>
-        PROVINCE
-        <select id="province" class="form-control mt-2" required></select>
-        CITY
-        <select id="cities" class="form-control mt-2" required></select>
-        BARANGAY
-        <select id="barangays" class="form-control mt-2" required></select>
-    </div>
- </div>
-</body>
-<script src="https://code.jquery.com/jquery-3.5.0.js"></script>
-<script src="location.js"></script>
-</html>
+    <!-- Reusable SVG shapes: sun ray group and star -->
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+        <defs>
+            <g id="ray">
+                <polygon points="0,-115 -9,-55 9,-55"/>
+                <polygon points="0,-100 -4,-55 4,-55" transform="rotate(-13)"/>
+                <polygon points="0,-100 -4,-55 4,-55" transform="rotate(13)"/>
+            </g>
+            <g id="sun">
+                <circle r="45"/>
+                <use href="#ray"/>
+                <use href="#ray" transform="rotate(45)"/>
+                <use href="#ray" transform="rotate(90)"/>
+                <use href="#ray" transform="rotate(135)"/>
+                <use href="#ray" transform="rotate(180)"/>
+                <use href="#ray" transform="rotate(225)"/>
+                <use href="#ray" transform="rotate(270)"/>
+                <use href="#ray" transform="rotate(315)"/>
+            </g>
+            <polygon id="star" points="0,-30 6.76,-9.3 28.53,-9.27 10.94,3.55 17.63,24.27 0,11.5 -17.63,24.27 -10.94,3.55 -28.53,-9.27 -6.76,-9.3"/>
+        </defs>
+    </svg>
 
+    <div class="split">
+        <!-- Left half: PH design -->
+        <section class="ph-panel">
+            <svg class="ph-panel__sun-bg" viewBox="-120 -120 240 240" fill="#fff" aria-hidden="true">
+                <use href="#sun"/>
+            </svg>
+
+            <svg class="ph-flag" viewBox="0 0 1200 600" role="img" aria-label="Flag of the Philippines">
+                <rect width="1200" height="300" fill="#0038a8"/>
+                <rect y="300" width="1200" height="300" fill="#ce1126"/>
+                <polygon points="0,0 519.6,300 0,600" fill="#fff"/>
+                <g fill="#fcd116">
+                    <use href="#sun" transform="translate(173,300)"/>
+                    <use href="#star" transform="translate(52,62) scale(0.9)"/>
+                    <use href="#star" transform="translate(52,538) scale(0.9)"/>
+                    <use href="#star" transform="translate(445,300) scale(0.9)"/>
+                </g>
+            </svg>
+
+            <h2>Mabuhay<span>!</span></h2>
+            <p>Find any place in the Philippines, from region all the way down to barangay.</p>
+
+            <ul class="ph-levels">
+                <li>Region</li>
+                <li>Province</li>
+                <li>City / Municipality</li>
+                <li>Barangay</li>
+            </ul>
+        </section>
+
+        <!-- Right half: location card -->
+        <section class="form-panel">
+            <div class="location-card">
+                <div class="location-card__header">
+                    <h1>PH Locations</h1>
+                    <p>Select your region, province, city and barangay</p>
+                </div>
+
+                <div class="location-card__body">
+                    <div id="error" class="alert alert-danger d-none" role="alert"></div>
+
+                    <div class="form-group">
+                        <label for="region" class="step-label"><span class="step">1</span>Region</label>
+                        <select id="region" class="form-control" required disabled></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="province" class="step-label"><span class="step">2</span>Province</label>
+                        <select id="province" class="form-control" required disabled></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="cities" class="step-label"><span class="step">3</span>City / Municipality</label>
+                        <select id="cities" class="form-control" required disabled></select>
+                    </div>
+                    <div class="form-group mb-0">
+                        <label for="barangays" class="step-label"><span class="step">4</span>Barangay</label>
+                        <select id="barangays" class="form-control" required disabled></select>
+                    </div>
+                </div>
+
+                <div class="location-card__footer">
+                    Data from the <a href="https://psgc.gitlab.io/api/" target="_blank" rel="noopener">PSGC API</a>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="location.js"></script>
+</body>
+</html>
